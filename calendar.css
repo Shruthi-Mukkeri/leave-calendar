@@ -1,0 +1,168 @@
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.left,
+.calendar {
+  width: 450px;
+}
+
+#prev,
+#nxt {
+  cursor: pointer;
+  height: 38px;
+  width: 38px;
+}
+
+#prev:hover,
+#nxt:hover {
+  color: #0060e6;
+  background: #eef5ff;
+  height: 38px;
+  width: 38px;
+}
+
+/* .chevron-container:hover {
+  background: #f14b26;
+  height: 32px;
+  width: 32px;
+} */
+
+.weekdays div {
+  width: 14.28%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.calendar #days .day {
+  width: 12.28%;
+  height: 52px;
+  margin: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  caret-color: transparent;
+}
+
+.calendar
+  .day:not(.prev-date, .nxt-date, .tillCurrentDate, .futureDays, .holiday) {
+  background: #f0f6ff;
+  color: #0060e6;
+  border-radius: 50%;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.calendar
+  .day:not(
+    .prev-date,
+    .nxt-date,
+    .active,
+    .tillCurrentDate,
+    .futureDays
+  ):hover {
+  background: #d9e6fc;
+}
+
+.calendar #days .prev-date,
+.calendar #days .nxt-date {
+  visibility: hidden;
+}
+
+.calendar #days .active {
+  background: #0060e6;
+  color: #fff;
+}
+
+.calendar #days .today {
+  position: relative;
+}
+
+.calendar #days .today::after {
+  position: absolute;
+  content: "";
+  height: 6px;
+  width: 6px;
+  background: #0060e6;
+  border-radius: 50%;
+  bottom: 8px;
+}
+
+.calendar #days .active.today::after {
+  background: #fff;
+}
+
+.right {
+  width: 275px;
+  border-end-end-radius: 15px;
+  border-top-right-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.events {
+  height: 385px;
+}
+
+.left {
+  height: 530px;
+}
+
+::-webkit-scrollbar {
+  height: 4px;
+  width: 8px;
+  background: #fff;
+  padding: 10px 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media screen and (max-width: 480px) {
+  .left,
+  .calendar {
+    width: 330px;
+  }
+  .left {
+    height: 360px;
+  }
+  .calendar #days .day {
+    width: 11.28%;
+    height: 52px;
+    height: 35px;
+  }
+  .calendar #days .today::after {
+    bottom: 2px;
+  }
+}
+
+.calendar #days .holiday {
+  background: #fff0f0;
+  color: #e60000;
+  border-radius: 50%;
+  font-weight: 900;
+}
+.calendar #days .in-range {
+  background: #eaeaea;
+  color: #1e1e1e;
+  border-radius: 50%;
+  font-weight: 900;
+}
+
+.calendar #days .selected {
+  background: #b0b0b0;
+  color: #000000;
+  border-radius: 50%;
+  font-weight: 900;
+}
