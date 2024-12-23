@@ -131,17 +131,14 @@ function addListner() {
       // Loop through the dates from startDate to endDate
       let currentDate = new Date(firstFullDate);
       while (currentDate <= secondFullDate) {
+        // gives dates between dates
+        const currentFormattedDate = `${currentDate.getDate()}/${currentDate.getMonth()}/${currentDate.getFullYear()}`;
+
         // Find the corresponding DOM element for this current date
         const rangeElement = Array.from(daysContainer.children).find((el) => {
-          const elDate = parseInt(el.innerHTML);
-          const elMonth = currentDate.getMonth(); // Get month of currentDate
-          const elYear = currentDate.getFullYear(); // Get year of currentDate
-
+          const elDate = el.getAttribute("data-date");
           return (
-            elDate === currentDate.getDate() &&
-            elMonth === currentDate.getMonth() &&
-            elYear === currentDate.getFullYear() &&
-            el.classList.contains("day")
+            elDate === currentFormattedDate && el.classList.contains("day")
           );
         });
 
@@ -159,7 +156,15 @@ function addListner() {
 
         // Add the 'in-range' class if the element exists and it's not a holiday
         if (rangeElement && !isHoliday) {
-          rangeElement.classList.add("in-range");
+          // add only for current month dates of range elements
+
+          if (
+            currentDate.getMonth() === month &&
+            currentDate.getFullYear() === year &&
+            rangeElement
+          ) {
+            rangeElement.classList.add("in-range");
+          }
           rangeElements.push({
             day: rangeElement,
             month: currentDate.getMonth(),
@@ -194,8 +199,14 @@ function initCalendar() {
   let days = "";
 
   //prev month days
+  // Calculate the previous month's year and month
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const prevYear = month === 0 ? year - 1 : year;
+
+  // Add previous month's days
   for (let x = day; x > 0; x--) {
-    days += `<div class='day prev-date'>${prevDays - x + 1}</div>`;
+    const prevDate = prevDays - x + 1; // Days of the previous month
+    days += `<div class='day prev-date' data-date="${prevDate}/${prevMonth}/${prevYear}">${prevDate}</div>`;
   }
 
   //current month days
@@ -237,14 +248,16 @@ function initCalendar() {
     } else {
       days += `<div class="day futureDays" data-date="${i}/${month}/${year}">${i}</div>`;
     }
-    const isSelected = selectedDates.some((ele) => ele.day.innerHTML === i);
 
     // compare the dates of selected ones with new calender and modify the dates
   }
 
-  //nxt month days
+  const nextMonth = month === 11 ? 0 : month + 1;
+  const nextYear = month === 11 ? year + 1 : year;
+
+  // Add next month's days
   for (let j = 1; j <= nextDays; j++) {
-    days += `<div class='day nxt-date' >${j}</div>`;
+    days += `<div class='day nxt-date' data-date="${j}/${nextMonth}/${nextYear}">${j}</div>`;
   }
   daysContainer.innerHTML = days;
   //add listner after calender initialized
@@ -252,7 +265,6 @@ function initCalendar() {
 
 initCalendar();
 addListner();
-// updateSelectedDates();
 
 //prev month
 prev.addEventListener("click", () => {
