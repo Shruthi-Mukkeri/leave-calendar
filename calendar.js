@@ -76,8 +76,6 @@ function updateSelectedDates() {
       selectedDates.push(newDate);
     }
   });
-
-  console.log(selectedDates, "Updated selectedDates");
 }
 
 function addListner() {
@@ -87,7 +85,6 @@ function addListner() {
     );
     if (isnotvalidDay) return;
     if (!e.target.classList.contains("day")) {
-      console.log("clicked diff ele");
       return;
     }
 
@@ -121,16 +118,9 @@ function addListner() {
         selectedDates[1].month,
         lastDate
       );
-      console.log(
-        firstFullDate,
-        secondFullDate,
-        "secondFullDatesecondFullDate"
-      );
       // Check if the second date is earlier than the first date
       if (secondFullDate < firstFullDate) {
-        console.log(secondFullDate < firstFullDate);
         alert("You selected the dates in reverse order. Please correct them!");
-        console.log(selectedDates, "");
         selectedDates[1].day.classList.remove("selected");
         selectedDates.pop(); // Remove the second date from the selection
         return; // Exit to allow the user to correct the selection
@@ -139,8 +129,6 @@ function addListner() {
       // Loop through the dates from startDate to endDate
       let currentDate = new Date(firstFullDate);
       while (currentDate <= secondFullDate) {
-        console.log(currentDate.toDateString()); // Output the current date
-
         // Find the corresponding DOM element for this current date
         const rangeElement = Array.from(daysContainer.children).find((el) => {
           const elDate = parseInt(el.innerHTML);
@@ -169,7 +157,6 @@ function addListner() {
 
         // Add the 'in-range' class if the element exists and it's not a holiday
         if (rangeElement && !isHoliday) {
-          console.log(rangeElement, ":rangeElement");
           rangeElement.classList.add("in-range");
           rangeElements.push(rangeElement);
         }
@@ -191,7 +178,6 @@ function initCalendar() {
   const day = firstDay.getDay();
 
   const nextDays = 7 - lastDay.getDay() - 1;
-  console.log(nextDays);
 
   //update date top of calendar
   date.innerHTML = months[month] + " " + year;
@@ -272,11 +258,8 @@ function initCalendar() {
 
     // compare the dates of selected ones with new calender and modify the dates
     selectedDates.forEach((ele) => {
-      console.log(ele.day.innerText, ":ele.day.textcontent");
       if (i === ele.day.innerText) {
-        console.log(i);
         days += `<div class="day selected">${i}</div>`;
-        console.log(days);
       }
     });
   }
