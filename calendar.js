@@ -91,11 +91,13 @@ function addListner() {
     // Clear all previous selections if there are already two selected dates
 
     if (selectedDates.length >= 2) {
+      console.log(selectedDates, "selectedDates");
+      console.log(rangeElements, "rangeElements");
       selectedDates.forEach((ele) => {
         ele.day.classList.remove("selected");
       });
       rangeElements.forEach((ele) => {
-        ele.classList.remove("in-range");
+        ele.day.classList.remove("in-range");
       });
 
       selectedDates = [];
@@ -158,7 +160,11 @@ function addListner() {
         // Add the 'in-range' class if the element exists and it's not a holiday
         if (rangeElement && !isHoliday) {
           rangeElement.classList.add("in-range");
-          rangeElements.push(rangeElement);
+          rangeElements.push({
+            day: rangeElement,
+            month: currentDate.getMonth(),
+            year: currentDate.getFullYear(),
+          });
         }
 
         // Increment currentDate by 1 day
@@ -216,57 +222,29 @@ function initCalendar() {
       (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)); // Add `holiday` if today is Saturday or Sunday
 
     if (isTillCurrentDate) {
-      days += `<div class='day tillCurrentDate'>${i}</div>`;
+      days += `<div class='day tillCurrentDate' data-date="${i}/${month}/${year}" >${i}</div>`;
     } else if (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
-      days += `<div class='day today holiday'>${i}</div>`; // Add both `today` and `holiday` classes
+      days += `<div class='day today holiday' data-date="${i}/${month}/${year}">${i}</div>`; // Add both `today` and `holiday` classes
     } else if (isToday) {
-      days += `<div class='day today'>${i}</div>`;
+      days += `<div class='day today' data-date="${i}/${month}/${year}">${i}</div>`;
     } else if (isHoliday) {
-      days += `<div class='day holiday'>${i}</div>`;
+      days += `<div class='day holiday' data-date="${i}/${month}/${year}">${i}</div>`;
     } else if (
       (month === new Date().getMonth() && year === new Date().getFullYear()) ||
       (month === nextMonthNumber && year === new Date().getFullYear())
     ) {
-      days += `<div class="day">${i}</div>`;
+      days += `<div class="day" data-date="${i}/${month}/${year}">${i}</div>`;
     } else {
-      days += `<div class="day futureDays">${i}</div>`;
+      days += `<div class="day futureDays" data-date="${i}/${month}/${year}">${i}</div>`;
     }
     const isSelected = selectedDates.some((ele) => ele.day.innerHTML === i);
 
-    // if (isTillCurrentDate) {
-    //   days += `<div class='day tillCurrentDate${
-    //     isSelected ? " selected" : ""
-    //   }'>${i}</div>`;
-    // } else if (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
-    //   days += `<div class='day today holiday'>${i}</div>`;
-    // } else if (isToday) {
-    //   days += `<div class='day today${
-    //     isSelected ? " selected" : ""
-    //   }'>${i}</div>`;
-    // } else if (isHoliday) {
-    //   days += `<div class='day holiday'>${i}</div>`;
-    // } else if (
-    //   (month === new Date().getMonth() && year === new Date().getFullYear()) ||
-    //   (month === nextMonthNumber && year === new Date().getFullYear())
-    // ) {
-    //   days += `<div class="day${isSelected ? " selected" : ""}">${i}</div>`;
-    // } else {
-    //   days += `<div class="day futureDays${
-    //     isSelected ? " selected" : ""
-    //   }">${i}</div>`;
-    // }
-
     // compare the dates of selected ones with new calender and modify the dates
-    selectedDates.forEach((ele) => {
-      if (i === ele.day.innerText) {
-        days += `<div class="day selected">${i}</div>`;
-      }
-    });
   }
 
   //nxt month days
   for (let j = 1; j <= nextDays; j++) {
-    days += `<div class='day nxt-date'>${j}</div>`;
+    days += `<div class='day nxt-date' >${j}</div>`;
   }
   daysContainer.innerHTML = days;
   //add listner after calender initialized
