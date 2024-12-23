@@ -5,6 +5,7 @@ const calendar = document.getElementsByClassName("calendar"),
   nxt = document.getElementById("nxt");
 
 let selectedDates = [];
+let rangeElements = [];
 
 let today = new Date();
 let month = today.getMonth();
@@ -55,13 +56,28 @@ function getSundaysAndSaturdays(year, month) {
 
 function updateSelectedDates() {
   let arr = document.querySelectorAll(".selected");
-  // get month
 
-  selectedDates.push({
-    day: arr[arr.length - 1],
-    month,
-    year,
+  arr.forEach((ele) => {
+    const newDate = {
+      day: ele,
+      month,
+      year,
+    };
+
+    // Check if the exact date already exists
+    const isDuplicate = selectedDates.some(
+      (date) =>
+        date.day.innerHTML === newDate.day.innerHTML &&
+        date.month === newDate.month &&
+        date.year === newDate.year
+    );
+
+    if (!isDuplicate) {
+      selectedDates.push(newDate);
+    }
   });
+
+  console.log(selectedDates, "Updated selectedDates");
 }
 
 function addListner() {
@@ -75,35 +91,92 @@ function addListner() {
       return;
     }
 
-    const rangeElements = document.querySelectorAll(".in-range");
-
     // Clear all previous selections if there are already two selected dates
 
     if (selectedDates.length >= 2) {
       selectedDates.forEach((ele) => {
-        console.log(ele.day);
-      });
-
-      selectedDates.forEach((ele) => {
         ele.day.classList.remove("selected");
       });
-      selectedDates = [];
-
-      rangeElements.forEach((date) => {
-        date.classList.remove("in-range");
+      rangeElements.forEach((ele) => {
+        ele.classList.remove("in-range");
       });
+
+      selectedDates = [];
+      rangeElements = [];
     }
     // Add the 'selected' class to the clicked element
     e.target.classList.add("selected");
     updateSelectedDates();
     if (selectedDates.length == 2) {
-      const firstElement = selectedDates[0];
-      const lastElement = selectedDates[1];
+      const firstDate = parseInt(selectedDates[0].day.innerHTML);
+      const lastDate = parseInt(selectedDates[1].day.innerHTML);
+      //here check year and month and day and alert you reverse days
+      const firstFullDate = new Date(
+        selectedDates[0].year,
+        selectedDates[0].month,
+        firstDate
+      );
+      const secondFullDate = new Date(
+        selectedDates[1].year,
+        selectedDates[1].month,
+        lastDate
+      );
+      console.log(
+        firstFullDate,
+        secondFullDate,
+        "secondFullDatesecondFullDate"
+      );
+      // Check if the second date is earlier than the first date
+      if (secondFullDate < firstFullDate) {
+        console.log(secondFullDate < firstFullDate);
+        alert("You selected the dates in reverse order. Please correct them!");
+        console.log(selectedDates, "");
+        selectedDates[1].day.classList.remove("selected");
+        selectedDates.pop(); // Remove the second date from the selection
+        return; // Exit to allow the user to correct the selection
+      }
 
-      // console.log([...firstElement], [...lastElement], ":selectedDates");
-      // for (i = firstElement.textContent; i <= lastElement.textContent; i++) {
-      //   console.log(i);
-      // }
+      // Loop through the dates from startDate to endDate
+      let currentDate = new Date(firstFullDate);
+      while (currentDate <= secondFullDate) {
+        console.log(currentDate.toDateString()); // Output the current date
+
+        // Find the corresponding DOM element for this current date
+        const rangeElement = Array.from(daysContainer.children).find((el) => {
+          const elDate = parseInt(el.innerHTML);
+          const elMonth = currentDate.getMonth(); // Get month of currentDate
+          const elYear = currentDate.getFullYear(); // Get year of currentDate
+
+          return (
+            elDate === currentDate.getDate() &&
+            elMonth === currentDate.getMonth() &&
+            elYear === currentDate.getFullYear() &&
+            el.classList.contains("day")
+          );
+        });
+
+        // Check if the date is a holiday
+        const isICFAIHoliday = icfaiHolidays.some(
+          (holiday) =>
+            holiday.date === currentDate.getDate() &&
+            holiday.month === currentDate.getMonth() &&
+            holiday.year === currentDate.getFullYear()
+        );
+        const isHoliday =
+          isICFAIHoliday ||
+          currentDate.getDay() === 0 ||
+          currentDate.getDay() === 6;
+
+        // Add the 'in-range' class if the element exists and it's not a holiday
+        if (rangeElement && !isHoliday) {
+          console.log(rangeElement, ":rangeElement");
+          rangeElement.classList.add("in-range");
+          rangeElements.push(rangeElement);
+        }
+
+        // Increment currentDate by 1 day
+        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      }
     }
   });
 }
@@ -156,46 +229,46 @@ function initCalendar() {
       holidays.includes(i) ||
       (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)); // Add `holiday` if today is Saturday or Sunday
 
-    // if (isTillCurrentDate) {
-    //   days += `<div class='day tillCurrentDate'>${i}</div>`;
-    // } else if (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
-    //   days += `<div class='day today holiday'>${i}</div>`; // Add both `today` and `holiday` classes
-    // } else if (isToday) {
-    //   days += `<div class='day today'>${i}</div>`;
-    // } else if (isHoliday) {
-    //   days += `<div class='day holiday'>${i}</div>`;
-    // } else if (
-    //   (month === new Date().getMonth() && year === new Date().getFullYear()) ||
-    //   (month === nextMonthNumber && year === new Date().getFullYear())
-    // ) {
-    //   days += `<div class="day">${i}</div>`;
-    // } else {
-    //   days += `<div class="day futureDays">${i}</div>`;
-    // }
-    const isSelected = selectedDates.some((ele) => ele.day.innerHTML === i);
-
     if (isTillCurrentDate) {
-      days += `<div class='day tillCurrentDate${
-        isSelected ? " selected" : ""
-      }'>${i}</div>`;
+      days += `<div class='day tillCurrentDate'>${i}</div>`;
     } else if (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
-      days += `<div class='day today holiday'>${i}</div>`;
+      days += `<div class='day today holiday'>${i}</div>`; // Add both `today` and `holiday` classes
     } else if (isToday) {
-      days += `<div class='day today${
-        isSelected ? " selected" : ""
-      }'>${i}</div>`;
+      days += `<div class='day today'>${i}</div>`;
     } else if (isHoliday) {
       days += `<div class='day holiday'>${i}</div>`;
     } else if (
       (month === new Date().getMonth() && year === new Date().getFullYear()) ||
       (month === nextMonthNumber && year === new Date().getFullYear())
     ) {
-      days += `<div class="day${isSelected ? " selected" : ""}">${i}</div>`;
+      days += `<div class="day">${i}</div>`;
     } else {
-      days += `<div class="day futureDays${
-        isSelected ? " selected" : ""
-      }">${i}</div>`;
+      days += `<div class="day futureDays">${i}</div>`;
     }
+    const isSelected = selectedDates.some((ele) => ele.day.innerHTML === i);
+
+    // if (isTillCurrentDate) {
+    //   days += `<div class='day tillCurrentDate${
+    //     isSelected ? " selected" : ""
+    //   }'>${i}</div>`;
+    // } else if (isToday && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
+    //   days += `<div class='day today holiday'>${i}</div>`;
+    // } else if (isToday) {
+    //   days += `<div class='day today${
+    //     isSelected ? " selected" : ""
+    //   }'>${i}</div>`;
+    // } else if (isHoliday) {
+    //   days += `<div class='day holiday'>${i}</div>`;
+    // } else if (
+    //   (month === new Date().getMonth() && year === new Date().getFullYear()) ||
+    //   (month === nextMonthNumber && year === new Date().getFullYear())
+    // ) {
+    //   days += `<div class="day${isSelected ? " selected" : ""}">${i}</div>`;
+    // } else {
+    //   days += `<div class="day futureDays${
+    //     isSelected ? " selected" : ""
+    //   }">${i}</div>`;
+    // }
 
     // compare the dates of selected ones with new calender and modify the dates
     selectedDates.forEach((ele) => {
